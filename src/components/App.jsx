@@ -3,7 +3,6 @@ import ContactForm from './ContactForm';
 import ContactList from './ContactList';
 import Filter from './Filter';
 
-
 class App extends Component {
   state = {
     contacts: [],
@@ -11,7 +10,6 @@ class App extends Component {
   };
 
   componentDidMount() {
-    
     const savedContacts = localStorage.getItem('contacts');
 
     if (savedContacts) {
@@ -20,7 +18,6 @@ class App extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-   
     if (prevState.contacts !== this.state.contacts) {
       localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
     }
@@ -31,14 +28,24 @@ class App extends Component {
   };
 
   handleSubmit = (name, number) => {
-   
+    const normalizedContacts = this.state.contacts.map((contact) => ({
+      ...contact,
+      name: contact.name.toLowerCase(),
+    }));
+
+    const lowerCaseName = name.toLowerCase();
+
+    if (normalizedContacts.some((contact) => contact.name === lowerCaseName)) {
+      alert(`${name} is already in contacts`);
+      return;
+    }
+
     this.setState((prevState) => ({
-      contacts: [...prevState.contacts, { id: Date.now(), name, number }],
+      contacts: [...prevState.contacts, { id: Date.now(), name: lowerCaseName, number }],
     }));
   };
 
   handleDeleteContact = (id) => {
-  
     this.setState((prevState) => ({
       contacts: prevState.contacts.filter((contact) => contact.id !== id),
     }));
